@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+  #   branches:
+  #     - master
+  #   paths-ignore:
+  #     - '.gitignore'
+  #     - 'COPYING'
+  #     - '*.md'
+  # pull_request:
+  #   branches:
+  #     - master
+
+jobs:
+  build:
+    name: build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        env:
+          PACKAGES: >
+            ccache
+            libncursesw5-dev
+            libcurl4-gnutls-dev
+            libtag1-dev
+            libfftw3-dev
+            libmpdclient-dev
+            libboost-dev
+            libboost-filesystem-dev
+            libboost-locale-dev
+            libboost-program-options-dev
+            libboost-regex-dev
+            libboost-thread-dev
+            libreadline-dev
+            zlib1g-dev
+        run: |
+          sudo apt update -qq && sudo apt install -y --no-install-recommends ${{ env.PACKAGES }}
+
+      - name: Set up ccache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.ccache
+          key: ccache-${{ matrix.os }}-${{ github.run_id }}
+          restore-keys: ccache-${{ matrix.os }}-
+
+      - name: Build ncmpcpp
+        env:
+          CCACHE_DIR: ${{ github.workspace }}/.ccache
+        run: |
+          autoreconf -fiv
+          CC='ccache gcc' CXX='ccache g++' BOOST_LIB_SUFFIX='' ./configure \
+            --prefix=/usr \
+            --enable-clock \
+            --enable-unicode \
+            --without-iconv \
+            --enable-outputs \
+            --enable-visualizer \
+            --with-curl \
+            --with-taglib
+          make -j$(nproc) install-strip DESTDIR=$GITHUB_WORKSPACE/AppDir || exit 1
+          ccache -vv --show-stats
+          tar -C $GITHUB_WORKSPACE/AppDir -cJvf $GITHUB_WORKSPACE/ncmpcpp.tar.xz .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ncmpcpp-${{ matrix.os }}
+          path: |
+            ./**/ncmpcpp.tar.xz
+          if-no-files-found: error
