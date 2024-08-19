@@ -1,7 +1,8 @@
 name: CI
 
 on:
-  push:
+  workflow_dispatch:
+  # push:
   #   branches:
   #     - master
   #   paths-ignore:
@@ -42,6 +43,7 @@ jobs:
             libreadline-dev
             zlib1g-dev
         run: |
+          export DEBIAN_FRONTEND=noninteractive
           sudo apt update -qq && sudo apt install -y --no-install-recommends ${{ env.PACKAGES }}
 
       - name: Set up ccache
@@ -68,6 +70,11 @@ jobs:
           make -j$(nproc) install-strip DESTDIR=$GITHUB_WORKSPACE/AppDir || exit 1
           ccache -vv --show-stats
           tar -C $GITHUB_WORKSPACE/AppDir -cJvf $GITHUB_WORKSPACE/ncmpcpp.tar.xz .
+
+      - name: Generate AppImage
+        run: |
+          export APPIMAGE_EXTRACT_AND_RUN=1
+          mkdir -p AppDir/usr/share/applications AppDir/usr/share/icons/hicolor/128x128/apps
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
