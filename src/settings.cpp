@@ -253,6 +253,7 @@ bool Configuration::read(const std::vector<std::string> &config_paths, bool igno
 			});
 	p.add("visualizer_autoscale", &visualizer_autoscale, "no", yes_no);
 	p.add("visualizer_spectrum_smooth_look", &visualizer_spectrum_smooth_look, "yes", yes_no);
+	p.add("visualizer_spectrum_smooth_look_legacy_chars", &visualizer_spectrum_smooth_look_legacy_chars, "yes", yes_no);
 	p.add("visualizer_spectrum_dft_size", &visualizer_spectrum_dft_size,
 			"2", [](std::string v) {
 			auto result = verbose_lexical_cast<size_t>(v);
@@ -277,6 +278,8 @@ bool Configuration::read(const std::vector<std::string> &config_paths, bool igno
 			lowerBoundCheck<double>(result, Config.visualizer_spectrum_hz_min+1);
 			return result;
 			});
+	p.add("visualizer_spectrum_log_scale_x", &visualizer_spectrum_log_scale_x, "yes", yes_no);
+	p.add("visualizer_spectrum_log_scale_y", &visualizer_spectrum_log_scale_y, "yes", yes_no);
 	p.add("visualizer_color", &visualizer_colors,
 	      "blue, cyan, green, yellow, magenta, red", list_of<NC::FormattedColor>);
 	p.add("system_encoding", &system_encoding, "", [](std::string encoding) {
