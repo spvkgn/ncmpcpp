@@ -1,7 +1,16 @@
 # NCurses Music Player Client (Plus Plus)
-Project page - https://rybczak.net/ncmpcpp/
 
 ## ncmpcpp – featureful ncurses based MPD client inspired by ncmpc
+
+### Project status
+
+The project is officially in maintenance mode. I (Andrzej Rybczak) still use it
+daily, but it's feature complete for me and there is very limited time I have
+for tending to the issue tracker and open pull requests.
+
+No new, substantial features should be expected (at least from me). However, if
+there are any serious bugs or the project outright stops compiling because of
+new, incompatible versions of dependencies, it will be fixed.
 
 ### Main features:
 * tag editor
@@ -19,8 +28,8 @@ Project page - https://rybczak.net/ncmpcpp/
 * [boost](https://www.boost.org/)
 * [ncurses](https://invisible-island.net/ncurses/announce.html)
 * [readline](https://tiswww.case.edu/php/chet/readline/rltop.html)
-#### Optional libraries
 * [curl](https://curl.se), for fetching lyrics and last.fm data
+#### Optional libraries
 * [fftw](http://www.fftw.org), for frequency spectrum music visualization mode
 * [taglib](https://taglib.org/), for tag editing
 

@@ -1,4 +1,4 @@
-AC_INIT([ncmpcpp],[0.10_dev])
+AC_INIT([ncmpcpp],[0.10])
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([subdir-objects])
@@ -70,15 +70,15 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ ]])],
 )
 CXXFLAGS="$old_CXXFLAGS $fast_math"
 
-# -std=c++14
-AC_MSG_CHECKING([whether compiler supports -std=c++14])
+# -std=c++20
+AC_MSG_CHECKING([whether compiler supports -std=c++20])
 old_CXXFLAGS="$CXXFLAGS"
-CXXFLAGS="-std=c++14"
+CXXFLAGS="-std=c++20"
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ ]])],
 	AC_MSG_RESULT([yes])
-		std_cpp14="-std=c++14",
+		std_cpp14="-std=c++20",
 	AC_MSG_RESULT([no])
-		AC_MSG_ERROR([[Your compiler doesn't seem to support C++14, please upgrade (GCC >= 5)]])
+		AC_MSG_ERROR([[Your compiler doesn't seem to support C++20, please upgrade]])
 )
 CXXFLAGS="$old_CXXFLAGS $std_cpp14"
 
@@ -152,7 +152,7 @@ PKG_CHECK_MODULES([ICU], [icu-i18n icu-uc], [
 	old_LIBS="$LIBS"
 	AC_SUBST(ICU_CFLAGS)
 	AC_SUBST(ICU_LIBS)
-	CPPFLAGS="$CPPFLAGS $ICU_CFLAGS -DU_USING_ICU_NAMESPACE=0"
+	CPPFLAGS="$CPPFLAGS $ICU_CFLAGS"
 	LIBS="$LIBS $ICU_LIBS"
 	AC_MSG_CHECKING([whether boost.regex was compiled with ICU support])
 	AC_LINK_IFELSE([AC_LANG_PROGRAM([
