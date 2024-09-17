@@ -23,6 +23,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          repository: 'ncmpcpp/ncmpcpp'
+
+      - name: Checkout branch from PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr checkout 437 -R ncmpcpp/ncmpcpp
 
       - name: Install build dependencies
         env:
@@ -41,8 +49,12 @@ jobs:
             libboost-thread-dev
             libreadline-dev
             zlib1g-dev
+            libmagick++-dev
         run: |
           sudo apt update -qq && sudo apt install -y --no-install-recommends ${{ env.PACKAGES }}
+          dpkg-query --showformat='${source:Upstream-Version}' --show libmagick++-dev | grep -Po '^(\d+\.){2}\d+' |\
+            xargs -I{} echo "/usr/lib/x86_64-linux-gnu/ImageMagick-{}/bin-q16" >> $GITHUB_PATH
+          echo $GITHUB_PATH
 
       - name: Set up ccache
         uses: actions/cache@v4
@@ -64,7 +76,8 @@ jobs:
             --enable-outputs \
             --enable-visualizer \
             --with-curl \
-            --with-taglib
+            --with-taglib \
+            --enable-artwork
           make -j$(nproc) install-strip DESTDIR=$GITHUB_WORKSPACE/AppDir || exit 1
           ccache -vv --show-stats
           tar -C $GITHUB_WORKSPACE/AppDir -cJvf $GITHUB_WORKSPACE/ncmpcpp.tar.xz .
